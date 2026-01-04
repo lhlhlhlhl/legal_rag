@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 interface ChatOutputProps {
   messages: Message[];
   status: string; // 实际值：submitted/streaming/ready/error
-}
+}//这两个值是直接由openai返回的，不需要额外处理,可以直接使用值，通过这个来判断ai的状态
 
 export default function ChatOutput({ messages, status }: ChatOutputProps) {
   const [loadingText, setLoadingText] = useState('正在检索法律条文');
@@ -26,7 +26,7 @@ export default function ChatOutput({ messages, status }: ChatOutputProps) {
     '正在生成专业回复'
   ];
 
-  // 监听 submitted/streaming 状态，触发加载动画
+  // 监听status,当status为submitted/streaming 状态，触发加载动画
   useEffect(() => {
     console.log('当前 status:', status); // 方便调试，确认状态流转
     // 当 status 是 submitted时，视为“加载中”

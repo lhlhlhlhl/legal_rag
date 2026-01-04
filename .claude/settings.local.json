@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m \"$(cat <<''EOF''\n更新项目文档和构建配置，准备部署到 Vercel\n\n- 更新 README.md，补充完整的项目文档\n- 修改 build 脚本，移除 --turbopack 标志以兼容 Vercel 部署\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

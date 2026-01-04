@@ -15,6 +15,7 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY??""
 );
 
+// 使用千问API配置
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: process.env.OPENAI_API_BASE_URL,
@@ -22,7 +23,7 @@ const openai = createOpenAI({
 
 async function generateEmbedding(message: string) {
   return embed({
-    model: openai.embedding('text-embedding-3-small'),
+    model: openai.embedding('text-embedding-v1'), // 使用千问支持的embedding模型
     value: message
   })
 }
@@ -97,95 +98,20 @@ const createPrompt = (context: string, userQuestion: string) => {
   }
 }
 
-// 将法律关键词标准化处理
-function normalizeLegalKeywordsInText(text: string): string {
-  // 常见的法律关键词模式匹配（不区分大小写）
-  const legalPatterns = [
-    // 法律类型
-    /民法典/gi,
-    /合同法/gi,
-    /劳动法/gi,
-    /劳动合同法/gi,
-    /消费者权益保护法/gi,
-    /婚姻法/gi,
-    /继承法/gi,
-    /物权法/gi,
-    /侵权责任法/gi,
-    /公司法/gi,
-    /知识产权法/gi,
-    /行政诉讼法/gi,
-    /民事诉讼法/gi,
-    /刑事诉讼法/gi,
-    
-    // 法律程序
-    /仲裁/gi,
-    /诉讼/gi,
-    /调解/gi,
-    /上诉/gi,
-    /申诉/gi,
-    /执行/gi,
-    /保全/gi,
-    /强制执行/gi,
-    
-    // 法律主体
-    /自然人/gi,
-    /法人/gi,
-    /法定代表人/gi,
-    /监护人/gi,
-    /代理人/gi,
-    /律师/gi,
-    /法官/gi,
-    /仲裁员/gi,
-    
-    // 法律概念
-    /违约责任/gi,
-    /侵权责任/gi,
-    /连带责任/gi,
-    /过错责任/gi,
-    /无过错责任/gi,
-    /举证责任/gi,
-    /诉讼时效/gi,
-    /除斥期间/gi,
-    /善意第三人/gi,
-    /不可抗力/gi,
-    /重大误解/gi,
-    /显失公平/gi,
-    /欺诈/gi,
-    /胁迫/gi,
-    /乘人之危/gi
-  ];
-  
-  let normalizedText = text;
-  
-  // 标准化法律关键词
-  legalPatterns.forEach(pattern => {
-    normalizedText = normalizedText.replace(pattern, (match) => {
-      return match.toLowerCase();
-    });
-  });
-  
-  return normalizedText;
-}
-
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
     const latestMessage = messages.at(-1).content;
     
-    // 只转换法律关键词为小写，保持其他内容不变
-    const normalizedMessage = normalizeLegalKeywordsInText(latestMessage);
-    console.log('原始输入:', latestMessage);
-    console.log('标准化输入:', normalizedMessage);
-    
     // embedding
-    const { embedding } = await generateEmbedding(normalizedMessage);
+    const { embedding } = await generateEmbedding(latestMessage);
     // console.log(embedding);
     // 相似度计算
     const context = await fetchRelevantContext(embedding);
     const prompt = createPrompt(context, latestMessage);
     console.log(prompt);
     const result = streamText({
-      model: openai("gpt-4o-mini"),
+      model: openai(process.env.QWEN_MODEL || "qwen-turbo"), // 使用千问模型
       messages: [prompt, ...messages]
     })
 

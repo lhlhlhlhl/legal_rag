@@ -20,7 +20,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
+// 自定义上下文提供者组件，用于在组件树中提供 AuthContext 的值
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -210,7 +210,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   );
 }
-
+// 自定义 hook，用于在组件中获取 AuthContext 中的值
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {

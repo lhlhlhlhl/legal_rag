@@ -19,6 +19,7 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY??""
 )
 
+// 使用千问API配置
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: process.env.OPENAI_API_BASE_URL,
@@ -174,8 +175,9 @@ const loadData = async (webpages: string[]) => {
       const chunks = await splitter.splitText(content);
 
       for (let chunk of chunks){
+        // 使用千问API的embedding模型
         const { embedding } = await embed({
-          model: openai.embedding('text-embedding-3-small'),
+          model: openai.embedding('text-embedding-v1'), // 使用千问支持的embedding模型
           value: chunk
         })
         console.log('向量长度:', embedding.length);

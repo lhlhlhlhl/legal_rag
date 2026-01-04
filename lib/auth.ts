@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
+// 引入 jsonwebtoken 库，作用是生成和验证 JWT 令牌
 import { cookies } from 'next/headers';
+// 引入 next/headers 库，作用是操作 HTTP 请求头中的 Cookie 字段
 
 // JWT 配置
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-access-token-secret-key-change-in-production';
@@ -33,7 +35,7 @@ export function generateAccessToken(user: User): string {
   };
 
   return jwt.sign(payload, ACCESS_TOKEN_SECRET, {
-    expiresIn: ACCESS_TOKEN_EXPIRY,
+    expiresIn: ACCESS_TOKEN_EXPIRY,// 15分钟过期
   });
 }
 
