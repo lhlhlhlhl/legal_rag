@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+// 引入 next/server 库，作用是操作 HTTP 请求和响应
 import { verifyPassword } from '@/lib/users';
 import { generateAccessToken, generateRefreshToken, setTokensToCookies } from '@/lib/auth';
 
